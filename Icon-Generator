@@ -1,0 +1,84 @@
+import sys
+import os
+from PIL import Image
+from pyfiglet import Figlet
+
+
+def create_icon_symbol(image_path):
+    try:
+        # Banner erstellen
+        banner = Figlet(font='slant')
+        print(banner.renderText('Welcome to the Icon Generator'))
+        print('<> by Maik Jeschke <> Iron Wall Security <>')
+        print()
+
+        # Bild öffnen
+        image = Image.open(image_path)
+
+        # Größen für das Icon-Symbol definieren
+        sizes = [(16, 16), (32, 32), (64, 64)]
+
+        # Verzeichnis für Icon-Symbole erstellen, falls es nicht existiert
+        icon_dir = 'icons'
+        if not os.path.exists(icon_dir):
+            os.makedirs(icon_dir)
+
+        # Symbol in verschiedenen Größen speichern
+        for size in sizes:
+            icon = image.resize(size, Image.ANTIALIAS)
+            icon_path = os.path.join(icon_dir, f'icon_{size[0]}.ico')
+            icon.save(icon_path, format='ICO')
+            print(f'Icon-Symbol "{icon_path}" erfolgreich erstellt.')
+
+        print('\nIcon-Symbole wurden erfolgreich generiert.')
+
+        # README.md-Datei erstellen
+        create_readme()
+
+    except FileNotFoundError:
+        print('Die README Datei wurde im entsprechenden Ordner erstellt.')
+    except Exception as e:
+        print(f'Ein Fehler ist aufgetreten: {str(e)}')
+
+
+def create_readme():
+    readme_content = '''
+# Icon Generator
+
+Dieses Skript generiert Icon-Symbole in verschiedenen Größen aus einem Bild.
+
+## Verwendung
+
+Führe das Skript mit dem Dateipfad des Bildes als Argument aus:
+
+
+Stelle sicher, dass du die erforderlichen Python-Bibliotheken installiert hast (Pillow, pyfiglet).
+pip install pyfiglet
+pip install pillow
+
+
+Die generierten Icon-Symbole werden im Ordner "icons" im aktuellen Arbeitsverzeichnis gespeichert. Erlaubt sind: PNG, JPG imd Bitmap Dateien
+
+---
+
+Erstellt von Maik Jeschke
+    '''
+    with open('README.md', 'w') as readme_file:
+        readme_file.write(readme_content)
+
+
+if __name__ == '__main__':
+    # Übergebene Datei als Argument erhalten
+    if len(sys.argv) < 2 or sys.argv[1] == '--help':
+        # Hilfeanzeige und Verwendungsinformationen anzeigen
+        print('Icon Generator')
+        print('by Maik Jeschke')
+        print()
+        print('Verwendung:')
+        print('python icon_generator.py pfad_zum_bild.jpg')
+        print()
+        print('Beispiel:')
+        print('python icon_generator.py my_image.jpg')
+    else:
+        image_path = sys.argv[1]
+        create_icon_symbol(image_path)
